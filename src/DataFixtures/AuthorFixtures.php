@@ -14,6 +14,12 @@ class AuthorFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
 
+        // Assurez-vous que les références des utilisateurs sont disponibles
+        $users = [];
+        for ($i = 0; $i < 5; $i++) {
+            $users[] = $this->getReference('user_' . $i);
+        }
+
         // Crée des auteurs avec des données aléatoires
         for ($i = 0; $i < 10; $i++) {
             $author = new Author();
@@ -22,7 +28,8 @@ class AuthorFixtures extends Fixture
                 ->setLastName($faker->lastName)
                 ->setBirthDate($faker->dateTimeThisCentury)
                 ->setCreatedAt(new DateTimeImmutable())
-                ->setUpdatedAt(new DateTimeImmutable());
+                ->setUpdatedAt(new DateTimeImmutable())
+                ->setUser($users[array_rand($users)]);  // Associe l'auteur à un utilisateur aléatoire
 
             $manager->persist($author);
             $this->addReference('author_' . $i, $author);

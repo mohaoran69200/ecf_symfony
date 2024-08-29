@@ -1,0 +1,44 @@
+<div>
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    <h2>
+        {% if book is defined %}
+            Mise à jour du livre {{ form.title.vars.value }}
+        {% else %}
+            Nouveau livre
+        {% endif %}
+    </h2>
+
+    <div>
+        {{ form_label(form.title) }}
+        {{ form_widget(form.title) }}
+        {{ form_errors(form.title) }}
+    </div>
+
+    <div>
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div>
+        {{ form_label(form.datePublication) }}
+        {{ form_widget(form.datePublication) }}
+        {{ form_errors(form.datePublication) }}
+    </div>
+
+    <div>
+        {{ form_label(form.author) }}
+        {{ form_widget(form.author) }}
+        {{ form_errors(form.author) }}
+    </div>
+
+    <div>
+        {{ form_label(form.user) }}
+        {{ form_widget(form.user) }}
+        {{ form_errors(form.user) }}
+    </div>
+
+    <button type="submit">Enregistrer</button>
+
+    {{ form_end(form) }}
+</div>

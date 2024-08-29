@@ -6,23 +6,26 @@ use App\Entity\Author;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class AuthorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('lastName')
-            ->add('firstName')
-            ->add('birthDate', null, [
-                'widget' => 'single_text',
+            ->add('firstName', TextType::class, [
+                'label' => 'First Name',
             ])
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
+            ->add('lastName', TextType::class, [
+                'label' => 'Last Name',
             ])
-            ->add('updatedAt', null, [
+            ->add('birthDate', DateType::class, [
                 'widget' => 'single_text',
+                'label' => 'Birth Date',
+                'required' => false,
             ])
+            // Removed createdAt and updatedAt as they are generally handled automatically
         ;
     }
 

@@ -14,7 +14,6 @@ use DateTimeImmutable;
 class BookFixtures extends Fixture implements DependentFixtureInterface
 {
     private array $bookData = [
-        // Vous pouvez adapter cette structure pour refléter les données des livres
         'author_0' => ['Book Title 1', 'Book Title 2'],
         'author_1' => ['Book Title 3', 'Book Title 4'],
         'author_2' => ['Book Title 5', 'Book Title 6'],

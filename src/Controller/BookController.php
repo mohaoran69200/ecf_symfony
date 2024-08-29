@@ -1,98 +1,91 @@
 <?php
-
 namespace App\Controller;
 
 use App\Form\BookType;
+use App\Entity\Book;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\BookRepository;
-use App\Entity\Book;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/book', name: 'app_book_')]
 class BookController extends AbstractController
 {
-    private AuthorizationCheckerInterface $authChecker;
+#[Route('/new', name: 'new')]
+#[IsGranted('ROLE_USER')]
+public function new(
+Request $request,
+EntityManagerInterface $entityManager
+): Response {
+$book = new Book();
+$form = $this->createForm(BookType::class, $book);
+$form->handleRequest($request);
 
-    public function __construct(AuthorizationCheckerInterface $authChecker)
-    {
-        $this->authChecker = $authChecker;
-    }
+if ($form->isSubmitted() && $form->isValid()) {
+$book->setUser($this->getUser())
+->setCreatedAt(new \DateTimeImmutable())
+->setUpdatedAt(new \DateTimeImmutable());
 
-    #[Route('/new', name: 'new')]
-    #[IsGranted('ROLE_USER')]
-    public function new(
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $book = new Book();
-        $form = $this->createForm(BookType::class, $book);
-        $form->handleRequest($request);
+$entityManager->persist($book);
+$entityManager->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $book->setUser($this->getUser())
-            ->setCreatedAt(new \DateTimeImmutable())
-                ->setUpdatedAt(new \DateTimeImmutable());
+$this->addFlash('success', 'Livre ajouté avec succès.');
+return $this->redirectToRoute('app_book_show', ['id' => $book->getId()]);
+} elseif ($form->isSubmitted()) {
+$this->addFlash('error', 'Le formulaire contient des erreurs.');
+}
 
-            $entityManager->persist($book);
-            $entityManager->flush();
+return $this->render('book/new.html.twig', [
+'form' => $form->createView(),
+]);
+}
 
-            $this->addFlash('success', 'Livre ajouté avec succès.');
-            return $this->redirectToRoute('app_book_show', ['id' => $book->getId()]);
-        } elseif ($form->isSubmitted()) {
-            $this->addFlash('error', 'Le formulaire contient des erreurs.');
-        }
+#[Route('/update/{id}', name: 'update')]
+#[IsGranted('ROLE_USER')]
+public function edit(
+Book $book,
+Request $request,
+EntityManagerInterface $entityManager
+): Response {
+$this->denyAccessUnlessGranted('edit', $book);
 
-        return $this->render('book/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
+$form = $this->createForm(BookType::class, $book);
+$form->handleRequest($request);
 
-    #[Route('/update/{id}', name: 'update')]
-    #[IsGranted('ROLE_USER')]
-    public function edit(
-        Book $book,
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->denyAccessUnlessGranted('edit', $book);
+if ($form->isSubmitted() && $form->isValid()) {
+$book->setUpdatedAt(new \DateTimeImmutable());
+$entityManager->flush();
+$this->addFlash('success', 'Livre mis à jour avec succès.');
+return $this->redirectToRoute('app_book_show', ['id' => $book->getId()]);
+}
 
-        $form = $this->createForm(BookType::class, $book);
-        $form->handleRequest($request);
+return $this->render('book/new.html.twig', [
+'form' => $form->createView(),
+'book' => $book,
+]);
+}
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $book->setUpdatedAt(new \DateTimeImmutable());
-            $entityManager->flush();
-            $this->addFlash('success', 'Livre mis à jour avec succès.');
-            return $this->redirectToRoute('app_book_show', ['id' => $book->getId()]);
-        }
+#[Route('/show/{id}', name: 'show')]
+public function show(Book $book): Response
+{
+return $this->render('book/show.html.twig', [
+'book' => $book,
+]);
+}
 
-        return $this->render('book/new.html.twig', [
-            'form' => $form->createView(),
-            'book' => $book,
-        ]);
-    }
+#[Route('/remove/{id}', name: 'remove')]
+#[IsGranted('ROLE_USER')]
+public function remove(Book $book, EntityManagerInterface $entityManager): Response
+{
+$this->denyAccessUnlessGranted('delete', $book);
 
-    #[Route('/show/{id}', name: 'show')]
-    public function show(Book $book): Response {
-        return $this->render('book/show.html.twig', [
-            'book' => $book,
-        ]);
-    }
+$entityManager->remove($book);
+$entityManager->flush();
+$this->addFlash('success', 'Livre supprimé avec succès.');
 
-    #[Route('/remove/{id}', name: 'remove')]
-    #[IsGranted('ROLE_USER')]
-    public function remove(Book $book, EntityManagerInterface $entityManager): Response {
-        $this->denyAccessUnlessGranted('delete', $book);
-
-        $entityManager->remove($book);
-        $entityManager->flush();
-        $this->addFlash('success', 'Livre supprimé avec succès.');
-
-        return $this->redirectToRoute('home');
-    }
+return $this->redirectToRoute('app_home');
+}
 }

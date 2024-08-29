@@ -1,0 +1,31 @@
+{# templates/home/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <style>
+        .book-list { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .book-item { background: #F5F5F5; padding: 1em; margin: 0.5em 0; border-radius: 4px; }
+    </style>
+
+    <div class="book-list">
+        <h1>Liste des Livres</h1>
+
+        {% if books is empty %}
+            <p>Aucun livre trouvé.</p>
+        {% else %}
+            <ul>
+                {% for book in books %}
+                    <li class="book-item">
+                        <h2>{{ book.title }}</h2>
+                        <p>Auteur: {{ book.author.lastName }}</p>
+                        <p>Description: {{ book.description }}</p>
+                        <p>Publié le: {{ book.datePublication|date('d/m/Y') }}</p>
+                        <a href="{{ path('app_book_show', {'id': book.id}) }}">Voir plus</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

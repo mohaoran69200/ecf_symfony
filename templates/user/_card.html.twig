@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>User Card</title>
+    <style>
+        .user-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .user-card h3 {
+            font-size: 1.25rem;
+            margin: 10px 0;
+        }
+
+        .user-card span {
+            display: block;
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .user-card .actions {
+            margin-top: 15px;
+        }
+
+        .user-card button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 0 5px;
+            transition: background-color 0.2s;
+        }
+
+        .user-card button:hover {
+            background-color: #0056b3;
+        }
+
+        .user-card form {
+            display: inline;
+        }
+
+        .user-card form button {
+            background-color: #dc3545;
+        }
+
+        .user-card form button:hover {
+            background-color: #c82333;
+        }
+
+        .ads-list {
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .ads-list h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .ads-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .ads-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="user-card">
+
+    {# Affichage de l'email de l'utilisateur #}
+    <h3>{{ user.email }}</h3>
+
+
+    {# Affiche les boutons de modification et suppression uniquement pour l'utilisateur connecté #}
+    {% if app.user and app.user.id == user.id %}
+        <div class="actions">
+            <a href="{{ path('app_user_edit_user', { id: user.id }) }}">
+                <button>Modifier</button>
+            </a>
+
+            <form action="{{ path('app_user_remove', { id: user.id }) }}" method="post">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                <button type="submit">Supprimer mon compte</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>

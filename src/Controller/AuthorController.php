@@ -94,6 +94,6 @@ class AuthorController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'Auteur supprimé avec succès.');
 
-        return $this->redirectToRoute('home');
+        return $this->redirectToRoute('app_home');
     }
 }
