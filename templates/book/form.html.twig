@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create/Update Book{% endblock %}
+
+{% block body %}
+    <main>
+        <section class="form-section">
+            <h1>{{ form.vars.value.id ? 'Edit Book' : 'Create Book' }}</h1>
+
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button type="submit" class="btn-submit">
+                {{ form.vars.value.id ? 'Update Book' : 'Create Book' }}
+            </button>
+            {{ form_end(form) }}
+        </section>
+    </main>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('path/to/your/form/styles.css') }}">
+{% endblock %}
